@@ -215,20 +215,7 @@ export default function ManageCategoriesScreen({ navigation }) {
 
             <TouchableOpacity
                 style={styles.addButton}
-                onPress={() => {
-                    if (!isPremium) {
-                        Alert.alert(
-                            'Төлбөртэй Боломж',
-                            'Зөвхөн Premium хэрэглэгчид шинэ категори нэмэх боломжтой.',
-                            [
-                                { text: 'Ойлголоо', style: 'cancel' },
-                                { text: 'Premium Авах', onPress: () => navigation.navigate('PremiumScreen') },
-                            ]
-                        );
-                    } else {
-                        setModalVisible(true);
-                    }
-                }}
+                onPress={() => setModalVisible(true)}
             >
                 <Ionicons name="add" size={28} color="white" />
             </TouchableOpacity>

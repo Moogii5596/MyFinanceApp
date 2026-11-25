@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, ActivityIndicator, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { doc, updateDoc } from 'firebase/firestore';
 import { AUTH, DB } from '../firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
 import { useUser } from '../contexts/UserContext';
@@ -12,14 +11,12 @@ const PREMIUM_PLANS = [
     { duration: '1 сар', price: 2500, discount: 0, description: 'Үндсэн Premium эрх' },
     { duration: '6 сар', price: 12000, discount: 20, description: '1 сарын төлбөртэй харьцуулахад хямд' },
     { duration: '1 жил', price: 23000, discount: 23, description: 'Жилийн шилдэг сонголт' },
-    { duration: '2 жил', price: 60000, discount: 0, description: 'Урт хугацааны хэрэглэгчдэд' },
-    { duration: '3 жил', price: 75000, discount: 17, description: 'Хамгийн хямд сарын төлбөр' },
 ];
 
 const PREMIUM_FEATURES = [
-    { icon: 'people-outline', name: 'Гэр Бүлийн Санхүү Удирдах', isNew: true },
+    { icon: 'people-outline', name: '3 ба түүнээс олон гишүүнтэй гэр бүлийн групп', isNew: true },
     { icon: 'bar-chart-outline', name: 'Нарийвчилсан График ба Тайлан', isNew: false },
-    { icon: 'receipt-outline', name: 'Төсөвлөлт (Budgeting) хийх', isNew: true },
+    { icon: 'receipt-outline', name: 'Хязгааргүй категорийн төсөв', isNew: true },
     { icon: 'filter-outline', name: 'Шүүлтүүрийн бүх боломж', isNew: false },
     { icon: 'save-outline', name: 'Үүлэн сан руу нөөцлөх', isNew: false },
 ];
@@ -32,31 +29,6 @@ const PremiumScreen = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const userId = AUTH.currentUser?.uid;
     
-    const grantPremiumForTesting = async () => {
-        if (!userId) return;
-
-        setIsLoading(true);
-        const userRef = doc(DB, 'users', userId);
-        const oneYearFromNow = new Date();
-        oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
-
-        try {
-            await updateDoc(userRef, {
-                premiumEndDate: oneYearFromNow,
-                isPremium: true,
-            });
-            setSuccessMessage("Таны Premium эрх амжилттай идэвхжлээ. (Тест)");
-            setIsSuccessModalVisible(true);
-
-        } catch (error) {
-            console.error("Тест Premium олгоход алдаа гарлаа:", error);
-            setSuccessMessage("Premium олголт амжилтгүй боллоо.");
-            setIsSuccessModalVisible(true);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     const handlePurchase = (plan) => {
         Alert.alert(
             "Төлбөр хийх",
@@ -64,7 +36,7 @@ const PremiumScreen = () => {
             [
                 { text: "Буцах", style: "cancel" },
                 { text: "Төлөх", onPress: () => {
-                    Alert.alert("Төлбөрийн Хуудас", "Төлбөрийн Gateway руу шилжиж байна...");
+                    Alert.alert("Тун удахгүй", "Төлбөрийн систем холбогдож байна. Удахгүй Premium эрх авах боломжтой болно.");
                 } }
             ]
         );
@@ -134,21 +106,6 @@ const PremiumScreen = () => {
                     </TouchableOpacity>
                 </View>
 
-                {/* Тест Premium товч */}
-                <View style={styles.testSection}>
-                    <TouchableOpacity 
-                        style={[styles.testButton, { opacity: isLoading ? 0.6 : 1 }]}
-                        onPress={grantPremiumForTesting}
-                        disabled={isLoading}
-                    >
-                        {isLoading ? (
-                            <ActivityIndicator color="white" />
-                        ) : (
-                            <Text style={styles.testButtonText}>Premium Авах (Тест)</Text>
-                        )}
-                    </TouchableOpacity>
-                </View>
-                
             </ScrollView>
 
             <CustomAlertModal

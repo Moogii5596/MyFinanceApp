@@ -13,6 +13,8 @@ const generateInviteCode = () => {
     return 'FMLY-' + nanoid(6).toUpperCase();
 };
 
+const FREE_MEMBER_LIMIT = 2;
+
 const FamilyGroupScreen = ({ navigation }) => {
     const { isPremium, isLoadingPremium } = usePremium();
 
@@ -165,6 +167,11 @@ const FamilyGroupScreen = ({ navigation }) => {
                 return;
             }
 
+            if (!isPremium && groupData.members.length >= FREE_MEMBER_LIMIT) {
+                showMemberLimitAlert();
+                return;
+            }
+
             const updatedMembers = [...groupData.members, {
                 uid: user.uid,
                 role: 'Member',
@@ -199,6 +206,17 @@ const FamilyGroupScreen = ({ navigation }) => {
         }
     };
     
+    const showMemberLimitAlert = () => {
+        Alert.alert(
+            "Premium Шаардлагатай",
+            `Үнэгүй эрхээр ${FREE_MEMBER_LIMIT} хүртэлх гишүүнтэй групп ашиглана. Илүү олон гишүүн нэмэхийн тулд Premium эрх аваарай.`,
+            [
+                { text: "Буцах", style: "cancel" },
+                { text: "Premium Авах", onPress: () => navigation.navigate('PremiumScreen') },
+            ]
+        );
+    };
+
     const inviteMemberByEmail = async () => {
         if (!inviteEmail.trim()) {
             Alert.alert("Анхааруулга", "Имэйл хаягаа оруулна уу.");
@@ -207,6 +225,11 @@ const FamilyGroupScreen = ({ navigation }) => {
         
         if (userRole !== 'Admin') {
             Alert.alert("Алдаа", "Зөвхөн админ гишүүн урьж чадна.");
+            return;
+        }
+
+        if (!isPremium && members.length >= FREE_MEMBER_LIMIT) {
+            showMemberLimitAlert();
             return;
         }
         
@@ -408,10 +431,6 @@ const FamilyGroupScreen = ({ navigation }) => {
         );
     }
     
-    if (!isPremium) {
-        return <PremiumGuard navigation={navigation} featureName="Гэр Бүлийн Санхүү" />;
-    }
-
     if (isLoading) {
         return (
             <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background }]}>

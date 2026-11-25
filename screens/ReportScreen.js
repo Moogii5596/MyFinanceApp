@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, Touchable
 import { Ionicons } from '@expo/vector-icons';
 import { collection, query, where, onSnapshot, getDocs } from 'firebase/firestore';
 import { AUTH, DB } from '../firebaseConfig';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { PieChart, LineChart } from 'react-native-chart-kit';
 import { useUser } from '../contexts/UserContext';
@@ -30,6 +30,7 @@ const getCurrentMonthRange = () => {
 
 const ReportScreen = () => {
     const userId = AUTH.currentUser?.uid;
+    const navigation = useNavigation();
     const { isPremium, isLoadingPremium } = usePremium();
     const [transactions, setTransactions] = useState([]);
     const [reportData, setReportData] = useState(null);
@@ -257,21 +258,6 @@ const ReportScreen = () => {
         );
     }
     
-    if (!isPremium) {
-        return (
-            <SafeAreaView style={styles.container}>
-                <View style={styles.premiumGate}>
-                    <Ionicons name="lock-closed-outline" size={50} color="#dc3545" />
-                    <Text style={styles.premiumHeader}>Premium Шаардлагатай</Text>
-                    <Text style={styles.premiumText}>Нарийвчилсан графикууд болон шинжилгээний тайлангууд зөвхөн Premium хэрэглэгчдэд нээлттэй.</Text>
-                    <TouchableOpacity style={styles.premiumButton} onPress={() => Alert.alert('Premium', 'Premium худалдан авах хуудас руу шилжих.')}>
-                        <Text style={styles.premiumButtonText}>Premium Авах</Text>
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
-        );
-    }
-    
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
@@ -291,17 +277,6 @@ const ReportScreen = () => {
                     <Text style={styles.timeRangeTextValue}>{timeRange.displayText}</Text>
                 </TouchableOpacity>
             </View>
-            
-            {!isPremium && (
-                <View style={styles.premiumGate}>
-                    <Ionicons name="lock-closed-outline" size={50} color="#dc3545" />
-                    <Text style={styles.premiumHeader}>Premium Шаардлагатай</Text>
-                    <Text style={styles.premiumText}>Нарийвчилсан графикууд болон шинжилгээний тайлангууд зөвхөн Premium хэрэглэгчдэд нээлттэй.</Text>
-                    <TouchableOpacity style={styles.premiumButton} onPress={() => Alert.alert('Premium', 'Premium худалдан авах хуудас руу шилжих.')}>
-                        <Text style={styles.premiumButtonText}>Premium Авах</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
             
             {reportData && (
                 <>
@@ -343,6 +318,16 @@ const ReportScreen = () => {
                            <Text style={styles.noDataText}>Сонгосон хугацаанд зарлага байхгүй байна.</Text>
                         }
                     </View>
+
+                    {!isPremium && (
+                        <View style={styles.upsellCard}>
+                            <Ionicons name="star" size={28} color="#FFD700" />
+                            <Text style={styles.upsellText}>Сүүлийн 4 сарын зарлагын хандлага, төсвийн биелэлтийн графикийг Premium эрхээр үзнэ.</Text>
+                            <TouchableOpacity style={styles.premiumButton} onPress={() => navigation.navigate('Тохиргоо', { screen: 'PremiumScreen' })}>
+                                <Text style={styles.premiumButtonText}>Premium Авах</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
 
                     {isPremium && expenseTrendData && (
                         <View style={styles.chartContainer}>
@@ -520,6 +505,20 @@ const styles = StyleSheet.create({
     chartText: { fontSize: 16, color: '#007bff', fontWeight: 'bold' },
     
     
+    upsellCard: {
+        backgroundColor: '#fff',
+        marginHorizontal: 20,
+        marginBottom: 20,
+        padding: 20,
+        borderRadius: 12,
+        alignItems: 'center',
+    },
+    upsellText: {
+        fontSize: 15,
+        color: '#6c757d',
+        textAlign: 'center',
+        marginVertical: 12,
+    },
     // Premium Gate
     premiumGate: {
         flex: 1,
