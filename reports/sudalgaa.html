@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Санхүүгийн аппын өрсөлдөгчийн судалгаа</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: one phone-width reading column; sticky chip nav; each chapter is a plain section, competitors as compact rows, plan as a status list. */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --ink:#111a2c; --muted:#566178; --line:#dfe4ec;
+  --accent:#0b6e63; --accent-soft:#dff1ee; --warn:#8a5a00; --warn-soft:#fbefd3;
+  --est:#5a3fa8; --est-soft:#ebe6fa; --done:#0b6e63; --bar:#0b6e63; --bar-dim:#9fb3c8;
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e141f; --surface:#161e2c; --ink:#e8edf5; --muted:#9aa6ba; --line:#28334a;
+  --accent:#4fc9b8; --accent-soft:#12332f; --warn:#f0c264; --warn-soft:#3a2e10;
+  --est:#b9a6f5; --est-soft:#2a2347; --done:#4fc9b8; --bar:#4fc9b8; --bar-dim:#4a5a73; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0e141f; --surface:#161e2c; --ink:#e8edf5; --muted:#9aa6ba; --line:#28334a;
+  --accent:#4fc9b8; --accent-soft:#12332f; --warn:#f0c264; --warn-soft:#3a2e10;
+  --est:#b9a6f5; --est-soft:#2a2347; --done:#4fc9b8; --bar:#4fc9b8; --bar-dim:#4a5a73; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.6}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:680px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header .wrap{padding-block:28px 8px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:28px;line-height:1.2;font-weight:800;margin:8px 0 12px;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);margin:0}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-block:10px;scrollbar-width:none}
+nav .wrap::-webkit-scrollbar{display:none}
+nav a{flex:none;font-size:14px;font-weight:600;color:var(--muted);text-decoration:none;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+nav a:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main .wrap{display:flex;flex-direction:column;gap:36px;padding-block:24px 56px}
+section{display:flex;flex-direction:column;gap:14px;scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
+h2{font-size:21px;line-height:1.3;font-weight:700;margin:0;text-wrap:balance}
+h3{font-size:16px;font-weight:700;margin:6px 0 0}
+p{margin:0}
+ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px;vertical-align:middle;white-space:nowrap}
+.tag.u{background:var(--warn-soft);color:var(--warn)}
+.tag.e{background:var(--est-soft);color:var(--est)}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:8px}
+.keys{list-style:none;padding:0;gap:10px}
+.keys li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.keys b{color:var(--accent)}
+.rows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.row{padding:12px 14px;display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row .name{font-weight:700}
+.row .meta{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.row .what{font-size:15px}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.chart .cap{font-size:13px;color:var(--muted)}
+.bar{display:grid;grid-template-columns:104px 1fr 52px;align-items:center;gap:8px;font-size:13px}
+.bar .track{height:14px;border-radius:4px;background:transparent;min-width:0}
+.bar .fill{height:100%;border-radius:4px;background:var(--bar);min-width:3px}
+.bar.dim .fill{background:var(--bar-dim)}
+.bar .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.plan{display:flex;flex-direction:column;gap:8px}
+.step{display:grid;grid-template-columns:22px 1fr;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.step .box{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);margin-top:3px;display:grid;place-items:center;font-size:13px;font-weight:800;color:var(--surface)}
+.step.done .box{background:var(--done);border-color:var(--done)}
+.step .t{font-weight:600}
+.step .d{font-size:14px;color:var(--muted)}
+.phase{display:flex;align-items:baseline;gap:10px;margin-top:10px}
+.phase .when{font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:999px;white-space:nowrap}
+footer .wrap{padding-block:0 40px;font-size:13px;color:var(--muted)}
+</style>
+
+<style>body{margin:0}img{max-width:100%}</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="eyebrow">MyFinanceApp · 2026 оны 11-р сар</div>
+  <h1>Санхүүгийн аппын өрсөлдөгчийн судалгаа</h1>
+  <p class="lede">Дэлхийд болон Монголд хувийн санхүүгийн аппууд юуг шийдэж хэрэглэгч татаж байгаа, бид юу хийх ёстой вэ.</p>
+</div></header>
+
+<nav aria-label="Бүлгүүд"><div class="wrap">
+  <a href="#dugnelt">Дүгнэлт</a>
+  <a href="#delhii">Дэлхий</a>
+  <a href="#azi">Ази</a>
+  <a href="#mongol">Монгол</a>
+  <a href="#tatah">Хэрэглэгч татах</a>
+  <a href="#une">Үнэ</a>
+  <a href="#tolovlogoo">Төлөвлөгөө</a>
+</div></nav>
+
+<main><div class="wrap">
+
+<section id="dugnelt">
+  <h2>Товч дүгнэлт</h2>
+  <ul class="keys">
+    <li><b>Ангилал эзэнгүй.</b> Монголын шууд өрсөлдөгчид бүгд гар оруулалттай жижиг аппууд.</li>
+    <li><b>Жинхэнэ өрсөлдөгч нь банк, хэтэвч.</b> Гэхдээ тэд зөвхөн өөрийн дансаа харуулдаг; төсөв, зарлагын ангилал санал болгодог нь олдоогүй.</li>
+    <li><b>Ялгарах зам нь хуулга импорт.</b> Нээлттэй банкгүй орнуудад гүйлгээг банкны хуулгын файлаас автоматаар оруулдаг. Монголд хэн ч хийгээгүй.</li>
+    <li><b>Захиалга дангаараа багийг тэжээхгүй.</b> 2,500 ₮/сар хямд биш, харин төлөгчийн тоо бага байх нь асуудал.</li>
+  </ul>
+  <div class="note">
+    <div><span class="tag u">баталгаажаагүй</span> эх хуудсаар нь шалгаагүй, огноогүй эсвэл эх сурвалжууд зөрсөн тоо.</div>
+    <div><span class="tag e">тооцоолол</span> бидний өөрийн тооцоо, таамаг.</div>
+    <div>Ихэнх тоог хайлтын хураангуйгаас авсан тул олон нийтэд ишлэхээс өмнө нягтлаарай. Ханш: 1 ам.доллар ≈ 3,570 ₮.</div>
+  </div>
+</section>
+
+<section id="delhii">
+  <h2>Дэлхийд гурван загвараар шийдсэн</h2>
+  <div class="rows">
+    <div class="row"><span class="name">Захиалгат «самбар»</span><span class="meta">YNAB, Monarch, Copilot · жилд $95–110</span><span class="what">Банкны данстай автоматаар холбогдож, бүх мөнгийг нэг дор харуулна.</span></div>
+    <div class="row"><span class="name">Шууд мөнгөн үр дүн</span><span class="meta">Rocket Money, Cleo · үнэгүй түвшинтэй</span><span class="what">Хэрэггүй захиалгыг цуцалж өгнө, цалингийн урьдчилгаа олгоно.</span></div>
+    <div class="row"><span class="name">Гар оруулалттай хөтлөгч</span><span class="meta">Money Manager, Wallet, Spendee, Goodbudget · сард $2–6</span><span class="what">Манай апп энэ бүлэгт орно.</span></div>
+  </div>
+
+  <div class="chart" role="img" aria-label="Төлбөртэй хэрэглэгчийн тоо: Rocket Money 5 сая, Cleo 1.3 сая, Monarch 0.5 сая, Copilot 0.1 сая">
+    <div class="cap">Төлбөртэй хэрэглэгч, сая <span class="tag u">баталгаажаагүй</span></div>
+    <div class="bar"><span>Rocket Money</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="v">5.0</span></div>
+    <div class="bar"><span>Cleo</span><div class="track"><div class="fill" style="width:26%"></div></div><span class="v">1.3</span></div>
+    <div class="bar dim"><span>Monarch</span><div class="track"><div class="fill" style="width:10%"></div></div><span class="v">0.5</span></div>
+    <div class="bar dim"><span>Copilot</span><div class="track"><div class="fill" style="width:2%"></div></div><span class="v">0.1</span></div>
+    <div class="cap">Хамгийн олон төлөгчтэй хоёр нь «төсөв» биш, тодорхой үр дүн зардаг.</div>
+  </div>
+
+  <h3>Сургамж</h3>
+  <ul>
+    <li><b>Үнэгүй, зараар амьдрах загвар бүтэлгүйтсэн.</b> Mint 2024 оны 3-р сард хаагдсан; нэг хэрэглэгчээс жилд ~$15 л олдог байв <span class="tag u">баталгаажаагүй</span>.</li>
+    <li><b>Төлбөрийн ханын нийтлэг хэв маяг.</b> Бичилт хийх нь үнэгүй; синк, хуваалцах эрх, олон төсөв, гүнзгий тайлан нь төлбөртэй.</li>
+    <li><b>Гэр бүлийн хуваалцалт нь тархалтын хэрэгсэл.</b> Goodbudget 2 төхөөрөмжийг үнэгүй өгдөг, Monarch нэг захиалгаар хос хоёуланг хамруулдаг.</li>
+    <li><b>AI туслах чиг хандлага болсон</b> (Origin, Cleo), гэхдээ хэдэн хувь нь хэрэглэдэг тухай тоо олдоогүй.</li>
+  </ul>
+</section>
+
+<section id="azi">
+  <h2>Нээлттэй банкгүй орнууд гүйлгээг яаж барьдаг вэ</h2>
+  <p>Монголд нээлттэй банкны стандарт байхгүй <span class="tag u">баталгаажаагүй</span>, тиймээс АНУ, Европын банк холболтын загвар бидэнд хамаарахгүй.</p>
+  <div class="rows">
+    <div class="row"><span class="name">Хуулгын файлыг AI-аар задлах</span><span class="meta">Finku (Индонез), Zaim (Япон)</span><span class="what">Бидэнд хамгийн ойр зам. Finku 350,000+ хэрэглэгчтэй болсон <span class="tag u">баталгаажаагүй</span>.</span></div>
+    <div class="row"><span class="name">Хурдан гар оруулалт</span><span class="meta">Shark Jizhang (Хятад)</span><span class="what">«3 секундэд бичнэ» гэж өөрийгөө зардаг.</span></div>
+    <div class="row"><span class="name">Баримтын зураг</span><span class="meta">Zaim (Япон)</span><span class="what">Баримтаа зураг авахуулж зарлага болгоно.</span></div>
+    <div class="row"><span class="name">SMS, мэдэгдэл унших</span><span class="meta">ZenMoney, CoinKeeper (Орос)</span><span class="what">Найдаж болохгүй: Google Play хязгаарладаг, Монголд утасны 41–45% нь iOS.</span></div>
+  </div>
+  <p>Монголд хуулга импортын зам нээлттэй: Хан банк хуулгаа PDF, TXT, XLS-ээр, Голомт PDF, Excel-ээр гаргадаг.</p>
+  <h3>Орлогын сургамж</h3>
+  <ul>
+    <li>Энэ бүлгийн нэг ч компани дан төсвийн захиалгаар том бизнес босгоогүй.</li>
+    <li>Money Forward-ийн орлогын ихэнх нь байгууллагын үйлчилгээнээс; Walnut зээлийн суваг болсон; Banksalad алдагдалтай хэвээр.</li>
+    <li>Цэвэр хөтлөгчид жилд ~$12-ын жижиг захиалгын бизнес хэвээр үлддэг.</li>
+    <li>10 саяас доош хүн амтай оронд амжилттай бие даасан төсвийн аппын жишээ олдоогүй.</li>
+  </ul>
+</section>
+
+<section id="mongol">
+  <h2>Монголын өрсөлдөгчид</h2>
+  <h3>Шууд өрсөлдөгчид</h3>
+  <div class="rows">
+    <div class="row"><span class="name">MyFin</span><span class="what">Өрхийн ба хувийн санхүү, үүлэн хадгалалт; жижиг бизнест ч чиглэсэн.</span></div>
+    <div class="row"><span class="name">Savely</span><span class="meta">Bitsoft · App Store 3.5 оноо, 44 үнэлгээ</span><span class="what">Данс, бэлэн мөнгөө гараар бүртгэж ангиллаар хянана.</span></div>
+    <div class="row"><span class="name">Savvyx, Finexy</span><span class="meta">2026 онд гарсан <span class="tag e">тооцоолол</span></span><span class="what">Finexy гэр бүлийн горимтой; Монгол гарал нь баталгаажаагүй.</span></div>
+    <div class="row"><span class="name">«Өрхийн төсөв»</span><span class="meta">Монголбанк</span><span class="what">Гараар бөглөдөг тооцоолуур.</span></div>
+  </div>
+  <p>Хэн нь ч хуулга импорт, зээлийн нэгтгэл, e-Barimt зарлаагүй. Тэдний таталт, үнийг татаж чадаагүй тул «жижиг» гэдэг нь бүрэн батлагдаагүй.</p>
+
+  <h3>Шууд бус өрсөлдөгчид</h3>
+  <div class="chart" role="img" aria-label="Хэрэглэгчийн тоо: MonPay 2.1 сая, Хан банк 1.8 сая, e-Barimt 1.4 сая, Toki 1.0 сая, Storepay 0.6 сая">
+    <div class="cap">Хэрэглэгч, сая <span class="tag u">баталгаажаагүй</span></div>
+    <div class="bar"><span>MonPay</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="v">2.1</span></div>
+    <div class="bar"><span>Хан банк</span><div class="track"><div class="fill" style="width:86%"></div></div><span class="v">1.8</span></div>
+    <div class="bar"><span>e-Barimt</span><div class="track"><div class="fill" style="width:67%"></div></div><span class="v">1.4</span></div>
+    <div class="bar"><span>Toki</span><div class="track"><div class="fill" style="width:48%"></div></div><span class="v">1.0</span></div>
+    <div class="bar"><span>Storepay</span><div class="track"><div class="fill" style="width:29%"></div></div><span class="v">0.6</span></div>
+    <div class="cap">Тоонууд өөр өөр он, өөр тодорхойлолттой (бүртгэл, идэвхтэй хэрэглэгч).</div>
+  </div>
+  <div class="rows">
+    <div class="row"><span class="name">Банкууд</span><span class="meta">Хан банк, Голомт</span><span class="what">Цалингийн данс, кэшбэкээр татдаг. Хуулга нь бидний өгөгдлийн эх үүсвэр.</span></div>
+    <div class="row"><span class="name">Хэтэвч, супер апп</span><span class="meta">MonPay, Toki, SocialPay</span><span class="what">Төлбөр, урамшууллаар татдаг. Гүйлгээ нь бидэнд харагдахгүй.</span></div>
+    <div class="row"><span class="name">Зээлийн аппууд</span><span class="meta">Storepay, Pocket, LendMN · 1.2–1.7 сая зээлдэгч</span><span class="what">Олон апп дахь хуваан төлөлтийг нэг дор харуулах хэрэгсэл олдоогүй.</span></div>
+    <div class="row"><span class="name">e-Barimt</span><span class="meta">сард 54.8 сая баримт</span><span class="what">Сугалаа, буцаан олголтоор зуршил бэлэн ч төсвийн давхарга байхгүй.</span></div>
+    <div class="row"><span class="name">M bank</span><span class="what">«Санхүүгийн сайн сайхны супер апп». Хамгийн магадлалтай өрсөлдөгч, мөн боломжит түнш <span class="tag e">тооцоолол</span>.</span></div>
+  </div>
+
+  <h3>Тэдний орхисон зай</h3>
+  <ul>
+    <li><b>Нэгдсэн зураг.</b> Олон банк, хэтэвч, зээлтэй өрхөд бүх мөнгөө нэг дор харах газар алга.</li>
+    <li><b>Өр.</b> Өр-орлогын харьцааны хязгаар 2026 оны 1-р сард 45% болсон. «Хэнд хэдийг, хэзээ төлөх вэ» гэдэг асуулт хурц <span class="tag e">тооцоолол</span>.</li>
+    <li><b>e-Barimt.</b> Баримтаа дараа сарын 8-ны дотор бүртгүүлэх хугацаатай; сануулга, тооцоо хийдэг хэрэгсэл алга.</li>
+  </ul>
+  <p>Эдгээр хэрэгцээг хэрэглэгчээс асууж баталгаажуулаагүй. Банкны аппуудад зарлагын аналитик үнэхээр байхгүй эсэхийг гараар шалгах ёстой.</p>
+</section>
+
+<section id="tatah">
+  <h2>Хэрэглэгчийг яаж татаж, тогтоодог вэ</h2>
+  <h3>Татах</h3>
+  <ul>
+    <li>Тэргүүлэгчдийн хэн нь ч төлбөртэй зараар суурь хэрэглэгчээ босгоогүй <span class="tag e">тооцоолол</span>.</li>
+    <li>YNAB арга барил, сургалтаар; Monarch Mint хаагдах мөчид импортын хэрэгслээ бэлдэж, Reddit-ээр тарсан.</li>
+    <li>Монголд тохирох суваг нь Facebook. Нэг суулгалтын өртгийн жишиг олдоогүй тул жижиг төсвөөр өөрсдөө хэмжинэ.</li>
+    <li>Дотоодын батлагдсан механизм: банкны кэшбэк, сугалаа, ikon.mn-ийн нийтлэл, unread.today-ийн аппын тойм.</li>
+  </ul>
+  <h3>Тогтоох</h3>
+  <ul>
+    <li><b>Эхний 3 өдөрт зорилго тавиулах.</b> Австралийн WeMoney үүнийг онбордингт оруулснаар хадгалалт 20% өссөн.</li>
+    <li>Гар оруулалттай апп хэрэглэгчийг хуримтлагдсан түүх, гэр бүлийн групп, өдөр тутмын зуршлаар тогтооно <span class="tag e">тооцоолол</span>.</li>
+    <li>Оруулалтыг хөнгөлөх нь эхэнд, тоглоомчлол түүний дараа.</li>
+  </ul>
+</section>
+
+<section id="une">
+  <h2>Үнэ ба орлого</h2>
+  <div class="rows">
+    <div class="row"><span class="name">2.1%</span><span class="what">Үнэгүй түвшинтэй аппын таталтаас төлбөрт шилжих дундаж (RevenueCat 2026, бүх ангилал).</span></div>
+    <div class="row"><span class="name">28% ба 8%</span><span class="what">Нэг жилийн дараа үлдэх нь: жилийн захиалагч 28%, сарын захиалагч 8%.</span></div>
+    <div class="row"><span class="name">17–32 хоног</span><span class="what">Энэ урттай үнэгүй туршилт хамгийн сайн хөрвөдөг.</span></div>
+    <div class="row"><span class="name">~23 сая ₮/жил</span><span class="what">50,000 таталт, 2% хөрвөлт, бүгд жилийн багц гэвэл <span class="tag e">тооцоолол</span>.</span></div>
+  </div>
+  <ul>
+    <li>Манай үнэ (сард 2,500 ₮, жилд 23,000 ₮) гадаадын хамгийн хямд хөтлөгчдөөс доогуур. Бууруулах шалтгаан алга.</li>
+    <li>Жилийн багцыг гол санал болгож, илүү үнэтэй гэр бүлийн багцыг турших орон зай бий <span class="tag e">тооцоолол</span>.</li>
+    <li>Хоёр дахь орлогын эх үүсвэр хэрэгтэй: бичил бизнесийн бүртгэл эсвэл банктай түншлэл.</li>
+    <li>QPay: шимтгэл 1%, холболт нэг удаа 300,000 ₮. Автомат сунгалт дэмждэг эсэх олдоогүй.</li>
+  </ul>
+</section>
+
+<section id="tolovlogoo">
+  <h2>Апп дээр хийх ажил</h2>
+  <p>Эрэмбэ, хугацаа нь санал <span class="tag e">тооцоолол</span>. Тэмдэглэгдсэн нь кодод хийгдсэн.</p>
+  <div class="plan">
+    <div class="phase"><span class="when">0–30 хоног</span><h3>Нэн даруй засах</h3></div>
+    <div class="step done"><span class="box" aria-label="Хийгдсэн">✓</span><div><div class="t">Тест товчийг авах</div><div class="d">Хэнд ч үнэгүй Premium өгдөг байсан.</div></div></div>
+    <div class="step done"><span class="box" aria-label="Хийгдсэн">✓</span><div><div class="t">Үнийн алдаа, эвдэрхий товчнууд</div><div class="d">2 ба 3 жилийн багцыг хассан; «Premium Авах» товчнууд ажилладаг болсон.</div></div></div>
+    <div class="step done"><span class="box" aria-label="Хийгдсэн">✓</span><div><div class="t">Төлбөрийн ханыг эргүүлэх</div><div class="d">Категори, энгийн тайлан, 3 төсөв, 2 хүний групп үнэгүй болсон.</div></div></div>
+    <div class="step"><span class="box" aria-label="Хийгдээгүй"></span><div><div class="t">QPay төлбөр холбох</div><div class="d">Худалдаачны гэрээ хэрэгтэй. Серверийн хамгаалалтыг хамт хийнэ.</div></div></div>
+    <div class="step"><span class="box" aria-label="Хийгдээгүй"></span><div><div class="t">Хэмжилт суулгах</div><div class="d">1, 7, 30 дахь өдрийн идэвх, эхний гүйлгээ, төлбөрт шилжилт.</div></div></div>
+    <div class="step"><span class="box" aria-label="Хийгдээгүй"></span><div><div class="t">Гараар шалгах, 10–15 хэрэглэгчтэй ярилцах</div><div class="d">Өрсөлдөгчдийн үнэ, банкны аппын аналитик, хэрэгцээг батлах.</div></div></div>
+
+    <div class="phase"><span class="when">1–3 сар</span><h3>Хэрэглэгчийг тогтоох</h3></div>
+    <div class="step"><span class="box" aria-label="Хийгдээгүй"></span><div><div class="t">Онбордингт зорилго, төсөв тавиулах</div><div class="d">Эхний 3 өдөрт нэг зорилго, нэг төсөв, эхний гүйлгээ.</div></div></div>
+    <div class="step"><span class="box" aria-label="Хийгдээгүй"></span><div><div class="t">Хуулга импорт</div><div class="d">Хан банк, дараа нь Голомт; автомат ангилалтай.</div></div></div>
+    <div class="step"><span class="box" aria-label="Хийгдээгүй"></span><div><div class="t">Хурдан оруулалт, сануулга</div><div class="d">2–3 товшилтоор бичих, цалингийн өдрийн сануулга, сарын тойм.</div></div></div>
+    <div class="step"><span class="box" aria-label="Хийгдээгүй"></span><div><div class="t">Урилгыг гэр бүлийн групптэй холбох</div><div class="d">Урьсан, уригдсан хоёуланд Premium-ийн хоног.</div></div></div>
+
+    <div class="phase"><span class="when">3–6 сар</span><h3>Ялгарах функцууд</h3></div>
+    <div class="step"><span class="box" aria-label="Хийгдээгүй"></span><div><div class="t">Зээл, хуваан төлөлтийн самбар</div><div class="d">Төлбөрийн хуанли, сануулга, сарын нийт төлбөр.</div></div></div>
+    <div class="step"><span class="box" aria-label="Хийгдээгүй"></span><div><div class="t">e-Barimt-ийн хамтрагч</div><div class="d">QR уншуулж зарлага болгох, бүртгэлийн хугацааны сануулга.</div></div></div>
+    <div class="step"><span class="box" aria-label="Хийгдээгүй"></span><div><div class="t">Нийгэмлэг, түншлэл</div><div class="d">Facebook групп, 30 хоногийн сорилт; Монголбанкны хөтөлбөр, M bank.</div></div></div>
+
+    <div class="phase"><span class="when">6–12 сар</span><h3>Хожим</h3></div>
+    <div class="step"><span class="box" aria-label="Хийгдээгүй"></span><div><div class="t">AI оруулалт</div><div class="d">Бичвэр, дуу, баримтын зургаар гүйлгээ бүртгэх.</div></div></div>
+    <div class="step"><span class="box" aria-label="Хийгдээгүй"></span><div><div class="t">Хоёр дахь орлогын эх үүсвэр</div><div class="d">Бичил бизнес, хувиараа хөдөлмөр эрхлэгчийн бүртгэл.</div></div></div>
+  </div>
+
+  <h3>Хариулт олдоогүй асуултууд</h3>
+  <ul>
+    <li>Монголбанк, СЗХ нээлттэй банкны зохицуулалт бэлдэж байгаа эсэх.</li>
+    <li>Apple-ийн Монгол дахь төлбөр хүлээн авах нөхцөл.</li>
+    <li>QPay давтагдах төлбөр дэмждэг эсэх.</li>
+    <li>Бусад банк, хэтэвч, зээлийн аппуудын хуулгын формат.</li>
+    <li>ebarimt.mn-ээс иргэн өөрийн баримтын жагсаалтыг экспортлох боломж.</li>
+  </ul>
+</section>
+
+</div></main>
+
+<footer><div class="wrap">Эх сурвалжийн холбоосуудтай бүрэн тайлан: repo-ийн <code>reports</code> хавтас дахь «Санхүүгийн аппын өрсөлдөгчийн судалгаа.md».</div></footer>
+</body>
+</html>
