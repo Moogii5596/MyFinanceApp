@@ -11,6 +11,8 @@ import { usePremium } from '../contexts/PremiumContext';
 
 const DUMMY_EXPENSE_CATEGORIES = ['Хүнс', 'Түрээс', 'Тээвэр', 'Зугаа', 'Төлбөр', 'Хувцас', 'Бусад Зарлага'];
 
+const FREE_BUDGET_LIMIT = 3;
+
 const BudgetingScreen = ({ navigation }) => {
 
     const { isPremium, isLoadingPremium } = usePremium();
@@ -67,6 +69,18 @@ const BudgetingScreen = ({ navigation }) => {
             return;
         }
 
+        if (!isPremium && budgets.length >= FREE_BUDGET_LIMIT) {
+            Alert.alert(
+                "Premium Шаардлагатай",
+                `Үнэгүй эрхээр ${FREE_BUDGET_LIMIT} хүртэлх категорийн төсөв үүсгэнэ. Хязгааргүй төсөв үүсгэхийн тулд Premium эрх аваарай.`,
+                [
+                    { text: "Буцах", style: "cancel" },
+                    { text: "Premium Авах", onPress: () => navigation.navigate('Тохиргоо', { screen: 'PremiumScreen' }) },
+                ]
+            );
+            return;
+        }
+
         setIsSaving(true);
         try {
             await addDoc(collection(DB, "budgets"), {
@@ -104,7 +118,6 @@ const BudgetingScreen = ({ navigation }) => {
                     onPress: async () => {
                         try {
                             await deleteDoc(doc(DB, "budgets", id));
-                            setSuccessMessage("Төсөв устгагдлаа.");
                             setShowSuccess(true);
                             setTimeout(() => {
                                 setShowSuccess(false);
@@ -227,19 +240,6 @@ const BudgetingScreen = ({ navigation }) => {
         );
     }
     
-    if (!isPremium) {
-        return (
-            <View style={styles.premiumGate}>
-                <Ionicons name="lock-closed-outline" size={50} color="#dc3545" />
-                <Text style={styles.premiumHeader}>Premium Шаардлагатай</Text>
-                <Text style={styles.premiumText}>Төсөвлөлт зөвхөн Premium хэрэглэгчдэд нээлттэй.</Text>
-                <TouchableOpacity style={styles.premiumButton} onPress={() => Alert.alert('Premium', 'Premium худалдан авах хуудас руу шилжих.')}>
-                    <Text style={styles.premiumButtonText}>Premium Авах</Text>
-                </TouchableOpacity>
-            </View>
-        );
-    }
-
     return (
         <KeyboardAvoidingView 
             style={{ flex: 1 }} 
